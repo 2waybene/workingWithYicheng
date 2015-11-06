@@ -7,6 +7,8 @@
 ##==================================================================================
 require(graphics)
 plot(density(c(-20, rep(0,98), 20)), xlim = c(-4, 4))  # IQR = 0
+
+
 # The Old Faithful geyser data
 d <- density(faithful$eruptions, bw = "sj")
 d
@@ -52,6 +54,8 @@ for(i in 2:length(kernels))
    lines(density(0, bw = 1, kernel =  kernels[i]), col = i)
 legend(1.5,.4, legend = kernels, col = seq(kernels),
        lty = 1, cex = .8, y.intersp = 1)
+
+
 ## show the kernels in the S parametrization
 plot(density(0, from = -1.2, to = 1.2, width = 2, kernel = "gaussian"),
      type = "l", ylim = c(0, 1), xlab = "",
@@ -61,6 +65,9 @@ for(i in 2:length(kernels))
 legend(0.6, 1.0, legend = kernels, col = seq(kernels), lty = 1)
 (RKs <- cbind(sapply(kernels,
                      function(k) density(kernel = k, give.Rkern = TRUE))))
+
+
+
 100*round(RKs["epanechnikov",]/RKs, 4) ## Efficiencies
 bw <- bw.SJ(precip) ## sensible automatic choice
 plot(density(precip, bw = bw),
@@ -70,6 +77,8 @@ for(i in 2:length(kernels))
 ## Bandwidth Adjustment for "Exactly Equivalent Kernels"
 h.f <- sapply(kernels, function(k)density(kernel = k, give.Rkern = TRUE))
 (h.f <- (h.f["gaussian"] / h.f)^ .2)
+
+
 ## -> 1, 1.01, .995, 1.007,... close to 1 => adjustment barely visible..
 plot(density(precip, bw = bw),
      main = "equivalent bandwidths, 7 different kernels")
