@@ -50,17 +50,19 @@ normMax    = 1.2 ## For additional round of cleaning
 ##  Read in data
 ##=============================================
 
-rawFiles <- list.files (paste(root, "myGit/mixturemodel/data/dt_01232014/OLK/",sep=""), pattern = "csv")
+rawFiles <- list.files (paste(root, "myGit/workingWithYicheng/phase-I-data/rawData/OLK/",sep=""), pattern = "csv")
 rawFiles
 
 
 #for (i in 1:length(rawFiles))
 #{
 
+##  Get a random file index i 
+
 i = floor(runif(1, min=1, length(rawFiles)))
 
 
-	fileName <- paste("myGit/mixturemodel/data/dt_01232014/OLK/", rawFiles[i], sep ="")
+	fileName <- paste("myGit/workingWithYicheng/phase-I-data/rawData/OLK/", rawFiles[i], sep ="")
 	f_IN <-  paste (root, fileName, sep ="")
 	nameSplit <- strsplit(f_IN, "/")[[1]]
 	sampleName <- nameSplit[length(nameSplit)]
@@ -222,6 +224,6 @@ peaks
 	file2save <- paste (storage.dir, "cleaned_", cleanedSample$sample, ".rda", sep="")
 	save (cleanedSample, file = file2save)
 
-}
+#}
 
 

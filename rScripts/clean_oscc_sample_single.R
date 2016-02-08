@@ -48,16 +48,18 @@ normMax    = 1.2 ## For additional round of cleaning
 ##  Read in data
 ##=============================================
 
-rawFiles <- list.files (paste(root, "myGit/mixturemodel/data/dt_01232014/OSCC/",sep=""), pattern = "csv")
+rawFiles <- list.files (paste(root, "myGit/workingWithYicheng/phase-I-data/rawData/OSCC/",sep=""), pattern = "csv")
+rawFiles
+
+
+#for (i in 1:length(rawFiles))      #JYL -- for single file only!!
+#{                                  #JYL -- for single file only!!
+
+i = floor(runif(1, min=1, length(rawFiles)))
 
 
 
-for (i in 1:length(rawFiles))
-{
-
-
-
-	fileName <- paste("myGit/mixturemodel/data/dt_01232014/OSCC/", rawFiles[i], sep ="")
+	fileName <- paste("myGit/workingWithYicheng/phase-I-data/rawData/OSCC/", rawFiles[i], sep ="")
 	f_IN <-  paste (root, fileName, sep ="")
 	nameSplit <- strsplit(f_IN, "/")[[1]]
 	sampleName <- nameSplit[length(nameSplit)]
@@ -338,10 +340,12 @@ index
 ##  Saving the results
 ##==========================
 
+##  you need to figure out file name and path
+
 	storage.dir <- paste (root, "myGit/mixturemodel/cleanedData/OSCC/", sep = "")
 	file2save <- paste (storage.dir, "cleaned_", cleanedSample$sample, ".rda", sep="")
 	save (cleanedSample, file = file2save)
 
-}
+	#}  #JYL -- for single file only!!
 
 

@@ -51,15 +51,16 @@ normMax    = 1.2 ## For additional round of cleaning
 ##  Read in data
 ##=============================================
 
-rawFiles <- list.files (paste(root, "myGit/mixturemodel/data/dt_01232014/Normal/",sep=""), pattern = "csv")
+rawFiles <- list.files (paste(root, "myGit/workingWithYicheng/phase-I-data/rawData/Normal/",sep=""), pattern = "csv")
 rawFiles
 
 
-for (i in 1:length(rawFiles))
-{
+#for (i in 1:length(rawFiles))      #JYL -- for single file only!!
+#{                                  #JYL -- for single file only!!
 
+  i = floor(runif(1, min=1, length(rawFiles)))
 
-	fileName <- paste("myGit/mixturemodel/data/dt_01232014/Normal/", rawFiles[i], sep ="")
+	fileName <- paste("myGit/workingWithYicheng/phase-I-data/rawData/Normal/", rawFiles[i], sep ="")
 	f_IN <-  paste (root, fileName, sep ="")
 	nameSplit <- strsplit(f_IN, "/")[[1]]
 	sampleName <- nameSplit[length(nameSplit)]
@@ -221,6 +222,6 @@ peaks
 	file2save <- paste (storage.dir, "cleaned_", cleanedSample$sample, ".rda", sep="")
 	save (cleanedSample, file = file2save)
 
-}
+#}  #JYL -- for single file only!!
 
 
