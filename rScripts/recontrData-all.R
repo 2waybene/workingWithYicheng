@@ -19,7 +19,136 @@ source (paste (root, "myGit/mixturemodel/Scripts/simDt_functions.R", sep = ""))
 source (paste (root, "myGit/mixturemodel/Scripts/reconstrDtFunctions.R", sep = ""))
 parameters <- para4()
 
+##================================
 
+##================================
+##  reconstruction function
+##================================
+
+reconstruct <- function (files, params)
+{
+  
+  dt.return <- ""
+  
+  for (k in 1:length(files))
+  {
+    k=1
+    load(paste(dt.dir, files[k], sep=""))
+    popNum = 3
+    if (cleanedSample$AneuLeft == "" || length(cleanedSample$AneuLeft) == 0)
+    {
+      popNum = 2
+    }
+    
+    if (cleanedSample$SP_count == "")
+    {
+      popNum = 1
+    }
+    
+    
+    #Make it 8 if greater than 8
+    if (popNum == 3)
+    {
+      cleanedSample$AneuLeft[which(cleanedSample$AneuLeft > 8)] <- 8 
+    }
+    #if (is.na(cleanedSample$SP_count1))
+    if (cleanedSample$SP_count >=5)
+    {
+      ratio <- cleanedSample$FP_count/cleanedSample$SP_count
+    }else{
+      ratio <- params$oneSampleRatio[1]/params$oneSampleRatio[2]
+    }
+    
+    
+    w.norm <- ratio/(1+ratio)
+    w.mito <- 1/(1+ratio)
+    x <- seq(0,2.3, by=(2.3/512))
+    x <- x[-1]
+    
+    if (popNum == 3)
+    {
+      y1 <- w.norm*P(x, cleanedSample$FP_mean, cleanedSample$FP_std)
+      y2 <- w.mito*P(x, cleanedSample$SP_mean, cleanedSample$SP_std)
+      y = y1 + y2
+    }else if (popNum ==2)
+    {
+      if (is.na(cleanedSample$SP_mean))
+      {
+        cleanedSample$SP_std = params$fakeSP_std 
+        cleanedSample$SP_mean = params$fakeSP_mean
+      }else if (is.na(cleanedSample$SP_std))
+      {
+        cleanedSample$SP_std = params$fakeSP_std 
+      }
+      
+      y1 <- (w.norm*P(x, cleanedSample$FP_mean, cleanedSample$FP_std))*params$twoSampleRatio[1]
+      y2 <- (w.mito*P(x, cleanedSample$SP_mean, cleanedSample$SP_std))*params$twoSampleRatio[1]
+      y3 <- P(x, params$fake_aneu_mean, params$fake_aneu_std)*params$twoSampleRatio[2]
+      y = y1 + y2 + y3
+    }
+    
+    
+    prob.y <- c()
+    pdf.y <- y/sum(y)
+    prob.y[1] <- pdf.y[1]
+    
+    #Gettig the empirical cdf, very important here!!
+    for (i in 2:length(y))
+    {
+      temp.prob <- pdf.y[i]
+      prob.y[i] <- prob.y[i-1] + temp.prob
+    }
+    
+    if (popNum == 3)
+    {
+      numOfAneu <- length(cleanedSample$AneuLeft)
+      num2Recontr <- 9*numOfAneu
+    }else{
+      num2Recontr <- 1000
+    }
+    
+    simDt <- c()
+    seed = 12345
+    for (i in 1:num2Recontr)
+    {
+      
+      x1 <- runif(1, 0, 1)
+      index <- which(prob.y < (x1 + 0.002) & prob.y > (x1 - 0.002))
+      if (length(index) < 1)
+      {
+        index <- which(prob.y < (x1 + 0.02) & prob.y > (x1 - 0.02))
+      }
+      if (length(index) < 1)
+      {
+        index <- which(prob.y < (x1 + 0.2) & prob.y > (x1 - 0.2))
+      }
+      temp <- sample( index, 1)
+      simDt[i] <- x[temp]
+    }
+    
+    if (popNum == 3)
+    {
+      simDt <- c(simDt , cleanedSample$AneuLeft)
+    }
+    
+    bk = floor(max(simDt))*2
+    den <- (hist(simDt, breaks=bk)$density)
+    
+    for (m in length(den):16)
+    {
+      den[m] <- params$filler
+    }
+    dt.temp <- as.data.frame(den)
+    colnames(dt.temp) <- cleanedSample$sample
+    dt.return <- cbind(dt.return, dt.temp)
+    
+  }
+  
+  return (dt.return)
+}
+
+
+##================================
 ##  normal sample
 
 #dt.dir <- paste (root, "/myGit/mixturemodel/cleanedData/Normal/", sep="")
