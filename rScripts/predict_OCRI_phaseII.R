@@ -1,9 +1,7 @@
 ##============================================
-##  File: predMod_3classes.R
+##  File: predict_OCRI_phaseII.R
 ##  Author: Jianying
-##  Modified from preModHong_02.R by Hong Xu
-##  then modified to predModHongMod.R
-##  Now, it becomes predModHongMod_v1.R
+##  Modified from predMod_3classes.R
 ##============================================
 library(caret)
 library(pROC)
@@ -75,27 +73,13 @@ setwd(paste (root, "/myGit/workingWithYicheng/phase-I-data/reconData", sep=""))
 
 #setwd(paste (root, "/myGit/workingWithYicheng/phase-II-data/reconData/", sep=""))
 
-##	param1
-#data <- read.table("recon_3classes_para1.txt", header=TRUE, sep = "\t")
-#setwd(paste (root, "/myGit/mixturemodel/modeling/", sep=""))
-#sink ("log_param1.txt")
 
-##	param2
-#data <- read.table("recon_3classes_para2.txt", header=TRUE, sep = "\t")
-#setwd(paste (root, "/myGit/mixturemodel/modeling/", sep=""))
-#sink ("log_param2.txt")
-
-
-##	param3
-#data <- read.table("recon_3classes_para3.txt", header=TRUE, sep = "\t")
-#setwd(paste (root, "/myGit/mixturemodel/modeling/", sep=""))
-#sink ("log_param3.txt")
 
 
 ##	param4
 data <- read.table("recon_3classes_para4.txt", header=TRUE, sep = "\t")
 setwd(paste (root, "/myGit/workingWithYicheng/phase-II-data/modeling/", sep=""))
-sink ("log_param4.txt")                   
+#sink ("log_param4.txt")                   
 
 
 ##	data cleaning
@@ -110,13 +94,25 @@ dataN0[,1] <- NULL
 
 ##### BEGIN: data partition >>>>>
 ## set random seed
-set.seed(12345)
+#set.seed(12345)
 
 
 ## create data partition
-inTrainingSet <- createDataPartition(data$label, p=.7, list=FALSE)
-labelTrain <- dataN0[ inTrainingSet,]
-labelTest <- dataN0[-inTrainingSet,]
+#inTrainingSet <- createDataPartition(data$label, p=.7, list=FALSE)
+
+labelTrain <- dataN0[,1]
+
+
+setwd(paste (root, "/myGit/workingWithYicheng/phase-II-data/reconData/", sep=""))
+dt.phase.II <- read.table("recon_3classes_para4.txt", header=TRUE, sep = "\t")
+
+var1 <- unlist(lapply(dt.phase.II , function(x) 0 == var(if (is.factor(x)) as.integer(x) else x)))
+dataN1 <- dt.phase.II[,-which(var1)]
+# drop the first column of ID?
+dataN1[,1] <- NULL
+labelTest <- dataN1
+
+
 #nrow(labelTrain)
 #nrow(labelTest)
 
@@ -156,101 +152,10 @@ svmProbs <- predict(svmFit, labelTest, type = "prob")
 cat ("This is the prediction with SVM")
 cat("\n")
 cat("\n")
-confusionMatrix(svmPred, labelTest$label)
 
+lab.labels <- c (rep ("c", 42), rep ("k",27), rep("n",0))
 
-
-##### BEGIN: train model - random forest >>>>>
-rfFit <- train(label ~ ., method = "rf", data = labelTrain)
-rfPred <- predict(rfFit, labelTest)
-cat("\n")
-cat ("This is the prediction with random forest")
-cat("\n")
-cat("\n")
-confusionMatrix(rfPred, labelTest$label)
-
-
-##### BEGIN: train model - regularized random forest >>>>>
-rrfFit <- train(label ~ ., method = "RRF", data = labelTrain)
-rrfPred <- predict(rrfFit, labelTest)
-cat("\n")
-cat ("This is the prediction with regularized random forest")
-cat("\n")
-cat("\n")
-confusionMatrix(rrfPred, labelTest$label)
-
-
-
-##### BEGIN: train model - knn >>>>>
-knnFit  <- train(
-  label ~ .,
-  data = labelTrain,
-  method='knn',
-  tuneGrid=expand.grid(.k=1:25),
-  metric='Accuracy',
-  trControl=trainControl(
-    method='repeatedcv', 
-    number=10, 
-    repeats=15))
-
-knnPred <- predict(knnFit , labelTest)
-cat("\n")
-cat ("This is the prediction with k-nearest neighbor")
-cat("\n")
-cat("\n")
-confusionMatrix(knnPred, labelTest$label)
-
-##	Neural network
-
-nnetFit <- train(  
-	label ~ .,
-  	data = labelTrain,
-      method = "nnet",
-      trace = FALSE,
-      maxit = 100)
-
-nnetPred <- predict(nnetFit , labelTest)
-cat("\n")
-cat ("This is the prediction with neural network")
-cat("\n")
-confusionMatrix(nnetPred, labelTest$label)
-
-
-
-##### BEGIN: train model - NaiveBayes >>>>>
-nbFit  <- train(
-  label ~ .,
-  data = labelTrain,
-  method='nb',
-  trControl=trainControl(method='cv',number=10)
-  )
-
-nbPred <- predict(nbFit , labelTest)
-cat("\n")
-cat ("This is the prediction with naive bayes")
-cat("\n")
-cat("\n")
-confusionMatrix(nbPred, labelTest$label)
-
-sink()
-
-
-##### BEGIN: train model - knn3 >>>>>
-
-##	NOT working yet!
-#knn3Fit  <- knn3(
-#  label ~ .,
-#  data = labelTrain,
-#	k = 11,
-#  trControl=trainControl(
-#    method='repeatedcv', 
- 
-#   number=10, 
-#    repeats=15))
-
-#knn3Pred <- predict(knn3Fit , labelTest)
-#confusionMatrix(knnPred, labelTest$label)
-
+confusionMatrix(svmPred, as.factor(lab.labels))
 
 
 
