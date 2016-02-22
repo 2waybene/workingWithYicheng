@@ -1,7 +1,7 @@
 ##==============================================================
-##  FileName: DI2rda_v1.R
+##  FileName: clean_oscc_sample_single.R
 ##  Author: Jianying Li
-##  Comment: this is "n" version of the script with goals
+##  Comment: this is "oscc" version of the script with goals
 ##           (1) Determine how many populations to save
 ##           (2) Thresholding for three populations
 ##              a. Normal family: mean < 1.2
@@ -15,6 +15,7 @@
 ##              b. count, mean and std for mitotic family
 ##              c. D.I. values for aneuploidy family
 ##		So far, works perfectly fine with OSCC data!!
+##  This is step one
 ##=============================================================
 
 
@@ -48,18 +49,16 @@ normMax    = 1.2 ## For additional round of cleaning
 ##  Read in data
 ##=============================================
 
-rawFiles <- list.files (paste(root, "myGit/workingWithYicheng/phase-I-data/rawData/OSCC/",sep=""), pattern = "csv")
-rawFiles
-
-
-#for (i in 1:length(rawFiles))      #JYL -- for single file only!!
-#{                                  #JYL -- for single file only!!
-
-i = floor(runif(1, min=1, length(rawFiles)))
+rawFiles <- list.files (paste(root, "myGit/workingWithYicheng/phase-II-data/OSCC/",sep=""), pattern = "csv")
 
 
 
-	fileName <- paste("myGit/workingWithYicheng/phase-I-data/rawData/OSCC/", rawFiles[i], sep ="")
+for (i in 1:length(rawFiles))
+{
+
+
+
+	fileName <- paste("myGit/workingWithYicheng/phase-II-data/OSCC/", rawFiles[i], sep ="")
 	f_IN <-  paste (root, fileName, sep ="")
 	nameSplit <- strsplit(f_IN, "/")[[1]]
 	sampleName <- nameSplit[length(nameSplit)]
@@ -340,12 +339,10 @@ index
 ##  Saving the results
 ##==========================
 
-##  you need to figure out file name and path
-
-	storage.dir <- paste (root, "myGit/mixturemodel/cleanedData/OSCC/", sep = "")
+	storage.dir <- paste (root, "myGit/workingWithYicheng/phase-II-data/clearnedData/OSCC/", sep = "")
 	file2save <- paste (storage.dir, "cleaned_", cleanedSample$sample, ".rda", sep="")
 	save (cleanedSample, file = file2save)
 
-	#}  #JYL -- for single file only!!
+}
 
 

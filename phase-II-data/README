@@ -1,0 +1,9 @@
+This folder contains new follow up data
+
+Primary steps are:
+
+Step 1 run ~/myGit/workingWithYicheng/rScripts/clean_olk_sample_single.R to create cleaned data in ~/myGit/workingWithYicheng/phase-II-data/clearnedData/OLK/*.Rdata
+Step 1 run ~/myGit/workingWithYicheng/rScripts/clean_oscc_sample_single.R to create cleaned data in ~/myGit/workingWithYicheng/phase-II-data/clearnedData/OSCC/*.Rdata
+Step 2 run ~/myGit/workingWithYicheng/rScripts/recontrData-all.R and produce  ~/myGit/workingWithYicheng/phase-II-data/reconData/recon_3classes_para4.txt
+Step 3 run ~/myGit/workingWithYicheng/rScripts/predMod_3classes.R and predict for "OCRI"
+
