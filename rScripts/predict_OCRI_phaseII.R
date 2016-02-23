@@ -88,7 +88,8 @@ var0 <- unlist(lapply(data, function(x) 0 == var(if (is.factor(x)) as.integer(x)
 dataN0 <- data[,-which(var0)]
 # drop the first column of ID?
 dataN0[,1] <- NULL
-
+data.2.classes <- dataN0[-which (dataN0$label == "k"),]
+labelTrain <- data.2.classes
 
 
 
@@ -100,8 +101,30 @@ dataN0[,1] <- NULL
 ## create data partition
 #inTrainingSet <- createDataPartition(data$label, p=.7, list=FALSE)
 
-labelTrain <- dataN0[,1]
+dim(labelTrain)
 
+##### BEGIN: tune the parameters >>>>>
+## control:
+# resampling technique: 5-repeat 10-fold cross-validation
+# performance metrics: ROC AUC curve
+
+ctrl <- trainControl(method = "repeatedcv",
+                     repeats = 5,
+                     summaryFunction = multiClassSummary,
+                     classProbs = TRUE)
+
+
+##### END: tune the parameters <<<<<
+##### BEGIN: train model - svm >>>>>
+
+set.seed(1024)
+svmFit <- train(label ~ ., data = labelTrain,
+                ## training model: svm >>>
+                method = "svmRadial",
+                metric = "ROC",
+                tuneLength = 10,
+                trControl = ctrl)
+##=================================================================================
 
 setwd(paste (root, "/myGit/workingWithYicheng/phase-II-data/reconData/", sep=""))
 dt.phase.II <- read.table("recon_3classes_para4.txt", header=TRUE, sep = "\t")
@@ -110,8 +133,9 @@ var1 <- unlist(lapply(dt.phase.II , function(x) 0 == var(if (is.factor(x)) as.in
 dataN1 <- dt.phase.II[,-which(var1)]
 # drop the first column of ID?
 dataN1[,1] <- NULL
-labelTest <- dataN1
 
+labelTest <- dataN1
+dim(labelTest)
 
 #nrow(labelTrain)
 #nrow(labelTest)
