@@ -7,6 +7,9 @@ output:
     theme: cosmo
 ---
 
+### This should give Yicheng some feeling about how much R can do!
+#### Well, there is a lot to learn in computer programming!!
+
 ### Welcome and good luck to you all at Zillow's Home Value prediction!
 #### with a price pool of 1.2 Million Dollar
 
